@@ -1,0 +1,4 @@
+Graph Size,Kruskal Time (ms),Prim Array Time (ms),Prim Min-Heap Time (ms)
+8,0.017,0.012,0.013
+15,0.026,0.04,0.023
+20,0.027,0.041,0.023
