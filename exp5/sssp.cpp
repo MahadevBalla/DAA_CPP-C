@@ -1,5 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
+using namespace chrono;
 
 // MinHeap implementation
 class MinHeap {
@@ -171,39 +172,6 @@ vector<int> bellmanFord(const vector<vector<pair<int, int>>>& graph, int V, int 
     return dist;
 }
 
-// Floyd-Warshall algorithm for all pairs shortest paths
-vector<vector<int>> floydWarshall(const vector<vector<pair<int, int>>>& graph, int V) {
-    vector<vector<int>> dist(V, vector<int>(V, INT_MAX));
-
-    // Initialize distance matrix
-    for (int i = 0; i < V; i++) {
-        dist[i][i] = 0;  // Distance to self is 0
-    }
-
-    // Set direct edges
-    for (int u = 0; u < V; u++) {
-        for (auto& edge : graph[u]) {
-            int v = edge.first;
-            int weight = edge.second;
-            dist[u][v] = weight;
-        }
-    }
-
-    // Floyd-Warshall algorithm
-    for (int k = 0; k < V; k++) {
-        for (int i = 0; i < V; i++) {
-            for (int j = 0; j < V; j++) {
-                if (dist[i][k] != INT_MAX && dist[k][j] != INT_MAX &&
-                    dist[i][k] + dist[k][j] < dist[i][j]) {
-                    dist[i][j] = dist[i][k] + dist[k][j];
-                }
-            }
-        }
-    }
-
-    return dist;
-}
-
 // All Pairs Shortest Paths using Dijkstra for each vertex
 vector<vector<int>> allPairsDijkstra(const vector<vector<pair<int, int>>>& graph, int V) {
     vector<vector<int>> allDistances(V, vector<int>(V));
@@ -234,7 +202,7 @@ vector<vector<int>> allPairsBellmanFord(const vector<vector<pair<int, int>>>& gr
 
 // Print shortest paths from source to all vertices
 void printShortestPaths(const vector<int>& dist, int src) {
-    cout << "Shortest distances from source " << src << " to all vertices:" << endl;
+    cout << "Shortest distances from source " << src << " to all vertices -" << endl;
     for (int i = 0; i < dist.size(); i++) {
         if (dist[i] == INT_MAX)
             cout << "Vertex " << i << ": INFINITY" << endl;
@@ -258,7 +226,7 @@ void printAllPairsShortestPaths(const vector<vector<int>>& allDistances) {
         return;
     }
 
-    cout << "All Pairs Shortest Paths:" << endl;
+    cout << "All Pairs Shortest Paths -" << endl;
     cout << "    ";
     for (int j = 0; j < allDistances.size(); j++) {
         cout << j << "     ";
@@ -318,16 +286,39 @@ int main() {
                 cout << "Error: Graph contains a negative weight cycle reachable from source " << src << endl;
             }
             else {
+                auto startBellman = high_resolution_clock::now();
                 vector<int> dist = bellmanFord(graph, V, src);
+                auto stopBellman = high_resolution_clock::now();
+                double bellmanTime = duration_cast<microseconds>(stopBellman - startBellman).count() / 1000.0;
+
                 if (!dist.empty()) {
                     printShortestPaths(dist, src);
+                    cout << "Bellman-Ford execution time: " << bellmanTime << " milliseconds" << endl;
                 }
             }
         }
         else {
-            cout << "Graph has no negative edges. Using Dijkstra's algorithm." << endl;
-            vector<int> dist = dijkstra(graph, V, src);
-            printShortestPaths(dist, src);
+            cout << "Graph has no negative edges. Running both algorithms for comparison:" << endl;
+
+            // Dijkstra
+            auto startDijkstra = high_resolution_clock::now();
+            vector<int> distDijkstra = dijkstra(graph, V, src);
+            auto stopDijkstra = high_resolution_clock::now();
+            double dijkstraTime = duration_cast<microseconds>(stopDijkstra - startDijkstra).count() / 1000.0;
+
+            // Bellman-Ford
+            auto startBellman = high_resolution_clock::now();
+            vector<int> distBellman = bellmanFord(graph, V, src);
+            auto stopBellman = high_resolution_clock::now();
+            double bellmanTime = duration_cast<microseconds>(stopBellman - startBellman).count() / 1000.0;
+
+            cout << "\n--- Dijkstra's Algorithm Results ---" << endl;
+            printShortestPaths(distDijkstra, src);
+            cout << "Dijkstra execution time: " << dijkstraTime << " milliseconds" << endl;
+
+            cout << "\n--- Bellman-Ford Algorithm Results ---" << endl;
+            printShortestPaths(distBellman, src);
+            cout << "Bellman-Ford execution time: " << bellmanTime << " milliseconds" << endl;
         }
         break;
     }
@@ -346,30 +337,77 @@ int main() {
                 cout << "Error: Graph contains a negative weight cycle reachable from source " << src << endl;
             }
             else {
+                auto startBellman = high_resolution_clock::now();
                 vector<int> dist = bellmanFord(graph, V, src);
+                auto stopBellman = high_resolution_clock::now();
+                double bellmanTime = duration_cast<microseconds>(stopBellman - startBellman).count() / 1000.0;
+
                 if (!dist.empty()) {
                     printShortestPathToDestination(dist, src, dest);
+                    cout << "Bellman-Ford execution time: " << bellmanTime << " milliseconds" << endl;
                 }
             }
         }
         else {
-            cout << "Graph has no negative edges. Using Dijkstra's algorithm." << endl;
-            vector<int> dist = dijkstra(graph, V, src);
-            printShortestPathToDestination(dist, src, dest);
+            cout << "Graph has no negative edges. Running both algorithms for comparison:" << endl;
+
+            // Dijkstra
+            auto startDijkstra = high_resolution_clock::now();
+            vector<int> distDijkstra = dijkstra(graph, V, src);
+            auto stopDijkstra = high_resolution_clock::now();
+            double dijkstraTime = duration_cast<microseconds>(stopDijkstra - startDijkstra).count() / 1000.0;
+
+            // Bellman-Ford
+            auto startBellman = high_resolution_clock::now();
+            vector<int> distBellman = bellmanFord(graph, V, src);
+            auto stopBellman = high_resolution_clock::now();
+            double bellmanTime = duration_cast<microseconds>(stopBellman - startBellman).count() / 1000.0;
+
+            cout << "\n--- Dijkstra's Algorithm Results ---" << endl;
+            printShortestPathToDestination(distDijkstra, src, dest);
+            cout << "Dijkstra execution time: " << dijkstraTime << " milliseconds" << endl;
+
+            cout << "\n--- Bellman-Ford Algorithm Results ---" << endl;
+            printShortestPathToDestination(distBellman, src, dest);
+            cout << "Bellman-Ford execution time: " << bellmanTime << " milliseconds" << endl;
         }
         break;
     }
     case 3: {
         // All Pairs Shortest Paths
         if (hasNegEdges) {
-            cout << "Graph contains negative edges. Using Floyd-Warshall algorithm for all pairs." << endl;
-            vector<vector<int>> allDistances = floydWarshall(graph, V);
+            cout << "Graph contains negative edges. Using Bellman-Ford for all pairs." << endl;
+
+            auto startBellman = high_resolution_clock::now();
+            vector<vector<int>> allDistances = allPairsBellmanFord(graph, V);
+            auto stopBellman = high_resolution_clock::now();
+            double bellmanTime = duration_cast<microseconds>(stopBellman - startBellman).count() / 1000.0;
+
             printAllPairsShortestPaths(allDistances);
+            cout << "Bellman-Ford (all pairs) execution time: " << bellmanTime << " milliseconds" << endl;
         }
         else {
-            cout << "Graph has no negative edges. Using Dijkstra's algorithm for all pairs." << endl;
-            vector<vector<int>> allDistances = allPairsDijkstra(graph, V);
-            printAllPairsShortestPaths(allDistances);
+            cout << "Graph has no negative edges. Running both algorithms for comparison:" << endl;
+
+            // Dijkstra for all pairs
+            auto startDijkstra = high_resolution_clock::now();
+            vector<vector<int>> allDistancesDijkstra = allPairsDijkstra(graph, V);
+            auto stopDijkstra = high_resolution_clock::now();
+            double dijkstraTime = duration_cast<microseconds>(stopDijkstra - startDijkstra).count() / 1000.0;
+
+            // Bellman-Ford for all pairs
+            auto startBellman = high_resolution_clock::now();
+            vector<vector<int>> allDistancesBellman = allPairsBellmanFord(graph, V);
+            auto stopBellman = high_resolution_clock::now();
+            double bellmanTime = duration_cast<microseconds>(stopBellman - startBellman).count() / 1000.0;
+
+            cout << "\n--- Dijkstra's Algorithm Results ---" << endl;
+            printAllPairsShortestPaths(allDistancesDijkstra);
+            cout << "Dijkstra (all pairs) execution time: " << dijkstraTime << " milliseconds" << endl;
+
+            cout << "\n--- Bellman-Ford Algorithm Results ---" << endl;
+            printAllPairsShortestPaths(allDistancesBellman);
+            cout << "Bellman-Ford (all pairs) execution time: " << bellmanTime << " milliseconds" << endl;
         }
         break;
     }
