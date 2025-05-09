@@ -95,7 +95,6 @@ void divideAndConquer(vector<int>& arr, int low, int high, int& ansLow, int& ans
             ansLow = leftLow;
             ansHigh = leftHigh;
             ansSum = leftSum;
-
         }
         else if (rightSum >= leftSum && rightSum >= crossSum) {
             ansLow = rightLow;
