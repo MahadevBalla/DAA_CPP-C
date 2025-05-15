@@ -1,6 +1,8 @@
 #include <iostream>
 #include <vector>
+#include <chrono>
 using namespace std;
+using namespace chrono;
 
 void merge(vector<int> &arr, int s, int mid, int e){
     int i=s, j=mid+1;
@@ -45,7 +47,11 @@ int main(){
     for (int i = 0; i < n; i++)
         cin >> arr[i];
 
+    auto start = high_resolution_clock::now();
     mergeSort(arr, 0, n-1);
+    auto end = high_resolution_clock::now();
+    double time = duration_cast<microseconds>(end - start).count();
     printArr(arr);
+    cout << "Time taken: " << time << "ms" << endl;
     return 0;
 }
